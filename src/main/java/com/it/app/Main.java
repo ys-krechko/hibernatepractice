@@ -3,8 +3,6 @@ package com.it.app;
 import com.it.dao.*;
 import com.it.dao.impl.*;
 import com.it.model.*;
-import com.it.util.HibernateUtil;
-import org.hibernate.Session;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -27,76 +25,61 @@ public class Main {
             System.out.println(session.toString());
         }*/
 
-        createOperator("mg1", "7534");
-        Operators persistOperator = operatorDAO.getOne(1L);
-        Set<Operators> operator = new HashSet<>();
-        operator.add(persistOperator);
-        createRole(operator, "manager");
-        Roles persistRole = rolesDAO.getOne(1L);
-        persistOperator.setRoles(persistRole);
+        createRole("manager");
+        Roles persistentRole = rolesDAO.getOne(1L);
+        createOperator(persistentRole, "someone", "65s4fs");
+        Operators persistentOperator = operatorDAO.getOne(1L);
 
-        createPersonalAccount(persistOperator);
-        PersonalAccount persistPersonalAccount = personalAccountDAO.getOne(1L);
-        persistOperator.setPersonalAccount(persistPersonalAccount);
-        operatorDAO.update(persistOperator);
+        createRole("director");
+        Roles persistentRole2 = rolesDAO.getOne(2L);
+        persistentRole2.setRole("new director");
+        rolesDAO.update(persistentRole2);
 
-        createHotelRoomPrice(LocalDate.of(2018, 01, 20), 2.50);
-        HotelRoomPrice persistHotelRoomPrice = hotelRoomPriceDAO.getOne(1L);
+        createPersonalAccount(persistentOperator);
+        PersonalAccount persistentPersonalAccount = personalAccountDAO.getOne(1L);
+
+        createHotelRoomPrice(LocalDate.of(2019, 12, 01), 2.50);
+
+        HotelRoomPrice persistentHotelRoomPrice = hotelRoomPriceDAO.getOne(1L);
         Set<HotelRoomPrice> hotelRoomPrices = new HashSet<>();
-        Set<HotelRoom> hotelRooms = new HashSet<>();
-        hotelRoomPrices.add(persistHotelRoomPrice);
-        createHotelRoom(hotelRoomPrices, "luxury", 3, "all inclusive");
-        HotelRoom persistHotelRoom = hotelRoomDAO.getOne(1L);
-        hotelRooms.add(persistHotelRoom);
-        persistHotelRoomPrice.setHotelRooms(hotelRooms);
-        hotelRoomPriceDAO.update(persistHotelRoomPrice);
+        hotelRoomPrices.add(persistentHotelRoomPrice);
+        createHotelRoom(hotelRoomPrices, "luxury", 2, "all inclusive");
+        HotelRoom persistentHotelRoom = hotelRoomDAO.getOne(1L);
 
-        createHotelRoomHotels(persistHotelRoom);
-        HotelRoomHotels persistHotelRoomHotels = hotelRoomHotelsDAO.getOne(1L);
-        Set<HotelRoomHotels> hotelRoomHotels = new HashSet<>();
-        hotelRoomHotels.add(persistHotelRoomHotels);
-        createHotels(hotelRoomHotels, "something", 5, "somewhere");
-        Hotels persistHotel = hotelsDAO.getOne(1L);
-        persistHotelRoomHotels.setHotels(persistHotel);
-        hotelRoomHotelsDAO.update(persistHotelRoomHotels);
-        persistHotelRoom.setHotelRoom_hotels(hotelRoomHotels);
+        createHotels("something", 2, "somewhere");
+        Hotels persistentHotel = hotelsDAO.getOne(1L);
 
-        createCustomer("vasili", "vasilev", "34340ff64", "23133-ff/01", LocalDate.of(2019, 03, 13));
-        Customer persistCustomer = customerDAO.getOne(1L);
-        createOrder(hotelRoomHotels, persistCustomer, persistPersonalAccount, persistOperator, LocalDate.of(2019,3, 17), 5, 1, 1354.00);
-        Set<Order> orders = new HashSet<>();
-        Order persistOrder = new Order();
-        orders.add(persistOrder);
-        persistCustomer.setOrder(persistOrder);
-        customerDAO.update(persistCustomer);
-        persistOperator.setOrders(orders);
-        operatorDAO.update(persistOperator);
-        persistPersonalAccount.setOrders(orders);
-        personalAccountDAO.update(persistPersonalAccount);
-        persistHotelRoomHotels.setOrder(persistOrder);
-        hotelRoomHotelsDAO.update(persistHotelRoomHotels);
+        createCustomer("someone", "Targariane", "s5dd4fs6", "54sdf-ds/1", LocalDate.of(2019, 01, 02));
+        Customer persistentCustomer = customerDAO.getOne(1L);
 
-        createInsurance(persistOrder, "some type", 3.50);
-        Insurance persistInsurance = insuranceDAO.getOne(1L);
-        persistOrder.setInsurance(persistInsurance);
-        orderDAO.update(persistOrder);
+        createInsurance("cool", 15.03);
+        Insurance persistentInsurance = insuranceDAO.getOne(1L);
+
+        createOrder(persistentInsurance, persistentCustomer, persistentPersonalAccount, persistentOperator, LocalDate.of(2019, 03, 25), 15, 2, 501.95);
+        Order persistentOrder = orderDAO.getOne(1L);
+
+        createHotelRoomHotels(persistentHotelRoom, persistentOrder, persistentHotel);
+
+        rolesDAO.delete(2L);
 
         hotelRoomHQL(1L);
+
     }
 
-    private static void createOperator(String operatorLogin, String operatorPassword) {
+    private static void createRole(String role) {
+        Roles transientRole = new Roles();
+        transientRole.setRole(role);
+        rolesDAO.save(transientRole);
+    }
+
+    private static void createOperator(Roles role, String operatorLogin, String operatorPassword) {
         Operators transientOperator = new Operators();
         transientOperator.setOperatorLogin(operatorLogin);
         transientOperator.setOperatorPassword(operatorPassword);
+        transientOperator.setRoles(role);
         operatorDAO.save(transientOperator);
     }
 
-    private static void createRole(Set<Operators> operators, String role) {
-        Roles transientRole = new Roles();
-        transientRole.setRole(role);
-        transientRole.setOperator(operators);
-        rolesDAO.save(transientRole);
-    }
 
     private static void createPersonalAccount(Operators operators) {
         PersonalAccount transientPersonalAccount = new PersonalAccount();
@@ -120,15 +103,8 @@ public class Main {
         hotelRoomDAO.save(transientHotelRoom);
     }
 
-    private static void createHotelRoomHotels(HotelRoom hotelRooms) {
-        HotelRoomHotels transientHotelRoomHotels = new HotelRoomHotels();
-        transientHotelRoomHotels.setHotelRooms(hotelRooms);
-        hotelRoomHotelsDAO.save(transientHotelRoomHotels);
-    }
-
-    private static void createHotels(Set<HotelRoomHotels> hotelRoomHotels, String hotelsName, Integer stars, String hotelsAddress) {
+    private static void createHotels(String hotelsName, Integer stars, String hotelsAddress) {
         Hotels transientHotel = new Hotels();
-        transientHotel.setHotelRoomHotels(hotelRoomHotels);
         transientHotel.setHotelsName(hotelsName);
         transientHotel.setStars(stars);
         transientHotel.setHotelsAddress(hotelsAddress);
@@ -145,9 +121,16 @@ public class Main {
         customerDAO.save(transientCustomer);
     }
 
-    private static void createOrder(Set<HotelRoomHotels> hotelRoomHotels, Customer customer, PersonalAccount personalAccount, Operators operators, LocalDate beginningDateOfTour, Integer amountOfDaysOfTour, Integer numberOfTourists, Double totalPrice) {
+    private static void createInsurance(String insuranceType, Double insurancePrice) {
+        Insurance transientInsurance = new Insurance();
+        transientInsurance.setInsuranceType(insuranceType);
+        transientInsurance.setInsurancePrice(insurancePrice);
+        insuranceDAO.save(transientInsurance);
+    }
+
+    private static void createOrder(Insurance insurance, Customer customer, PersonalAccount personalAccount, Operators operators, LocalDate beginningDateOfTour, Integer amountOfDaysOfTour, Integer numberOfTourists, Double totalPrice) {
         Order transientOrder = new Order();
-        transientOrder.setHotelRoomHotels(hotelRoomHotels);
+        transientOrder.setInsurance(insurance);
         transientOrder.setCustomer(customer);
         transientOrder.setPersonalAccount(personalAccount);
         transientOrder.setOperator(operators);
@@ -158,15 +141,13 @@ public class Main {
         orderDAO.save(transientOrder);
     }
 
-    private static void createInsurance(Order order, String insuranceType, Double insurancePrice) {
-        Insurance transientInsurance = new Insurance();
-        transientInsurance.setOrder(order);
-        transientInsurance.setInsuranceType(insuranceType);
-        transientInsurance.setInsurancePrice(insurancePrice);
-        insuranceDAO.save(transientInsurance);
+    private static void createHotelRoomHotels(HotelRoom hotelRooms, Order order, Hotels hotels) {
+        HotelRoomHotels transientHotelRoomHotels = new HotelRoomHotels();
+        transientHotelRoomHotels.setHotelRooms(hotelRooms);
+        hotelRoomHotelsDAO.save(transientHotelRoomHotels);
     }
 
-    private static void hotelRoomHQL (Long id){
+    private static void hotelRoomHQL(Long id) {
         HotelRoom hotelRoom = hotelRoomDAO.findWithPriceById(id);
         System.out.println(hotelRoom.getType());
     }

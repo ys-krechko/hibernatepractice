@@ -12,7 +12,7 @@ public class HotelRoomPrice {
     @Column(name = "hotel_room_price_id")
     private Long id;
 
-    @Column(name = "date")
+    @Column(name = "date_of_month")
     private LocalDate date;
 
     @Column(name = "price_per_night")

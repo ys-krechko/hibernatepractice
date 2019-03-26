@@ -45,6 +45,11 @@
             <artifactId>ehcache</artifactId>
             <version>${net.sf.ehcache}</version>
         </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-java8</artifactId>
+            <version>${org.hibernate.core}</version>
+        </dependency>
     </dependencies>
 
     <build>

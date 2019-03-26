@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
-@Table(name = "Order", schema = "projectdb")
+@Table(name = "OrderList", schema = "projectdb")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
