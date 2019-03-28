@@ -14,6 +14,11 @@ public abstract class GenericDAOImpl<T, U> implements GenericDAO<T, U> {
         this.type = type;
     }
 
+    /**
+     * Gets persistent entity by id
+     *
+     * @param id - entity ID
+     */
     @Override
     public T getOne(U id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -21,12 +26,15 @@ public abstract class GenericDAOImpl<T, U> implements GenericDAO<T, U> {
         }
     }
 
+    /**
+     * Deletes persistent entity by id
+     *
+     * @param id - entity ID
+     */
     @Override
     public void delete(U id) {
         Transaction transaction = null;
-        Session session = null;
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             T entity = session.get(type, (Serializable) id);
             if (entity != null) {
@@ -37,17 +45,18 @@ public abstract class GenericDAOImpl<T, U> implements GenericDAO<T, U> {
             if (transaction != null) {
                 transaction.rollback();
             }
-        } finally {
-            session.close();
         }
     }
 
+    /**
+     * Saves an transient entity
+     *
+     * @param entity - transient entity
+     */
     @Override
     public void save(T entity) {
         Transaction transaction = null;
-        Session session = null;
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             session.save(entity);
             transaction.commit();
@@ -55,24 +64,25 @@ public abstract class GenericDAOImpl<T, U> implements GenericDAO<T, U> {
             if (transaction != null) {
                 transaction.rollback();
             }
-        } finally {
-            session.close();
         }
     }
 
+    /**
+     * Updates a persistent\detached entity
+     *
+     * @param entity - persistent\detached entity
+     */
     @Override
     public void update(T entity) {
         Transaction transaction = null;
-        Session session = null;
-        try {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             session.update(entity);
+            transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
             }
-        } finally {
-            session.close();
         }
     }
 }

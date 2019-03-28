@@ -6,6 +6,7 @@ import com.it.model.*;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Main {
@@ -21,9 +22,6 @@ public class Main {
     private static final OperatorDAO operatorDAO = OperatorDAOImpl.getInstance();
 
     public static void main(String[] args) {
-        /*try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            System.out.println(session.toString());
-        }*/
 
         createRole("manager");
         Roles persistentRole = rolesDAO.getOne(1L);
@@ -43,7 +41,7 @@ public class Main {
         HotelRoomPrice persistentHotelRoomPrice = hotelRoomPriceDAO.getOne(1L);
         Set<HotelRoomPrice> hotelRoomPrices = new HashSet<>();
         hotelRoomPrices.add(persistentHotelRoomPrice);
-        createHotelRoom(hotelRoomPrices, "luxury", 2, "all inclusive");
+        createHotelRoom("luxury", 2, "all inclusive", hotelRoomPrices);
         HotelRoom persistentHotelRoom = hotelRoomDAO.getOne(1L);
 
         createHotels("something", 2, "somewhere");
@@ -94,12 +92,12 @@ public class Main {
         hotelRoomPriceDAO.save(transientHotelRoomPrice);
     }
 
-    private static void createHotelRoom(Set<HotelRoomPrice> hotelRoomPrices, String type, Integer numberOfGuests, String foodType) {
+    private static void createHotelRoom(String type, Integer numberOfGuests, String foodType, Set<HotelRoomPrice> hotelRoomPrices) {
         HotelRoom transientHotelRoom = new HotelRoom();
-        transientHotelRoom.setHotelRoomPrices(hotelRoomPrices);
         transientHotelRoom.setType(type);
         transientHotelRoom.setNumberOfGuests(numberOfGuests);
         transientHotelRoom.setFoodType(foodType);
+        transientHotelRoom.setHotelRoomPrices(hotelRoomPrices);
         hotelRoomDAO.save(transientHotelRoom);
     }
 
@@ -115,7 +113,7 @@ public class Main {
         Customer transientCustomer = new Customer();
         transientCustomer.setCustomersFirstName(customersFirstName);
         transientCustomer.setCustomersLastName(customersLastName);
-        transientCustomer.setCustomersLastName(customersPassportNumber);
+        transientCustomer.setCustomersPassportNumber(customersPassportNumber);
         transientCustomer.setCustomersContractNumber(customersContractNumber);
         transientCustomer.setCustomersContractDateOfSigning(customersContractDateOfSigning);
         customerDAO.save(transientCustomer);
@@ -144,11 +142,14 @@ public class Main {
     private static void createHotelRoomHotels(HotelRoom hotelRooms, Order order, Hotels hotels) {
         HotelRoomHotels transientHotelRoomHotels = new HotelRoomHotels();
         transientHotelRoomHotels.setHotelRooms(hotelRooms);
+        transientHotelRoomHotels.setOrder(order);
+        transientHotelRoomHotels.setHotels(hotels);
         hotelRoomHotelsDAO.save(transientHotelRoomHotels);
     }
 
     private static void hotelRoomHQL(Long id) {
-        HotelRoom hotelRoom = hotelRoomDAO.findWithPriceById(id);
-        System.out.println(hotelRoom.getType());
+        List<HotelRoom> hotelRoom = hotelRoomDAO.findWithPriceById(id);
+        System.out.println(hotelRoom.get(0).getType());
+        System.out.println(hotelRoom.get(0).getHotelRoomPrices().size());
     }
 }

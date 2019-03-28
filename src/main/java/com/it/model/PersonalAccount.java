@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "Personal account", schema = "projectdb")
+@Table(name = "Personal_account", schema = "projectdb")
 public class PersonalAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,7 +12,7 @@ public class PersonalAccount {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "operator_id", referencedColumnName = "operator_id", nullable = false)
+    @JoinColumn(name = "operator_id", referencedColumnName = "operator_id")
     private Operators operator;
 
     @OneToMany(mappedBy = "personalAccount")

@@ -18,7 +18,7 @@ public class Operators {
     private String operatorPassword;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "roles_id", nullable = false)
+    @JoinColumn(name = "roles_id")
     private Roles roles;
 
     @OneToOne(mappedBy = "operator")

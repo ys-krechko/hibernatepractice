@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "Hotel Room", schema = "projectdb")
+@Table(name = "Hotel_Room", schema = "projectdb")
 public class HotelRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +21,7 @@ public class HotelRoom {
     private String foodType;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "Hotel room_Hotel room price",
+    @JoinTable(name = "Hotel_room_Hotel_room_price",
             joinColumns = {@JoinColumn(name = "hotel_room_id")},
             inverseJoinColumns = {@JoinColumn(name = "hotel_room_price_id")})
     private Set<HotelRoomPrice> hotelRoomPrices;

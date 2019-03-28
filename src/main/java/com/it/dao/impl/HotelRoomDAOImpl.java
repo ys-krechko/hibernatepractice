@@ -6,6 +6,8 @@ import com.it.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
+import java.util.List;
+
 public class HotelRoomDAOImpl extends GenericDAOImpl<HotelRoom, Long> implements HotelRoomDAO {
     private static HotelRoomDAOImpl instance;
 
@@ -28,12 +30,12 @@ public class HotelRoomDAOImpl extends GenericDAOImpl<HotelRoom, Long> implements
      * @return
      */
     @Override
-    public HotelRoom findWithPriceById(Long id) {
+    public List<HotelRoom> findWithPriceById(Long id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "FROM Hotel Room hr JOIN FETCH hr.Hotel room price hrp WHERE (hrp.hotel_room_price_id = :hr.hotel_room_id)";
+            String hql = "SELECT hr FROM HotelRoom hr JOIN FETCH hr.hotelRoomPrices hrp WHERE hr.id = :id";
             Query query = session.createQuery(hql);
-            query.setParameter("hr.hotel_room_id", id);
-            return (HotelRoom) query.getSingleResult();
+            query.setParameter("id", id);
+            return query.list();
         }
     }
 }

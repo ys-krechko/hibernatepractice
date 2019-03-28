@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
-@Table(name = "OrderList", schema = "projectdb")
+@Table(name = "Order_List", schema = "projectdb")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,19 +25,19 @@ public class Order {
     private Double totalPrice;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "operator_id", nullable = false)
+    @JoinColumn(name = "operator_id")
     private Operators operator;
 
     @OneToOne
-    @JoinColumn(name = "insurance_id", referencedColumnName = "insurance_id", nullable = false)
+    @JoinColumn(name = "insurance_id", referencedColumnName = "insurance_id")
     private Insurance insurance;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "personal_account_id", nullable = false)
+    @JoinColumn(name = "personal_account_id")
     private PersonalAccount personalAccount;
 
     @OneToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "customers_id", nullable = false)
+    @JoinColumn(name = "customer_id", referencedColumnName = "customers_id")
     private Customer customer;
 
     @OneToMany(mappedBy = "order")

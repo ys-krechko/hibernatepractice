@@ -3,7 +3,7 @@ package com.it.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Hotel Room_Hotels", schema = "projectdb")
+@Table(name = "Hotel_Room_Hotels", schema = "projectdb")
 public class HotelRoomHotels {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -11,15 +11,15 @@ public class HotelRoomHotels {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "hotel_room_id", nullable = false)
+    @JoinColumn(name = "hotel_room_id")
     private HotelRoom hotelRooms;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "hotels_id", nullable = false)
+    @JoinColumn(name = "hotels_id")
     private Hotels hotels;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_id")
     private Order order;
 
     public Long getId() {
